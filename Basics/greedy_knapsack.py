@@ -22,8 +22,8 @@ def knapsack_greedy(capacity, item_list, value_list, weight_list):
 
 my_items = ("book", "clock", "computer", "painting", "radio", "vase")
 my_capacity = 20
-my_vals = dict(zip(my_items, (9, 175, 200, 99, 20, 50)))
-my_weights = dict(zip(my_items, (1, 10, 20, 9, 4, 2)))
+my_vals = dict(zip(my_items, (9, 175, 200, 28, 20, 50)))
+my_weights = dict(zip(my_items, (1, 10, 20, 7, 4, 2)))
 
 my_result = knapsack_greedy(my_capacity, my_items, my_vals, my_weights)
 print(my_result)
