@@ -23,6 +23,7 @@ class DiceGame(MonteCarloModel):
             if roll < self.rolls[-2]:
                 break
 
+        # print(self.rolls)
         return self.score
 
     def reset(self):
@@ -30,6 +31,7 @@ class DiceGame(MonteCarloModel):
         self.score = 0
 
 model = DiceGame()
+# model.run()
 
 # Repeating the model many times so that we get a result much closer to the actual result.
 
