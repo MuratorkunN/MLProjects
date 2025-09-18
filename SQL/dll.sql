@@ -1,26 +1,47 @@
-create table users(
-user_id serial primary key,
-user_type varchar(20) check (user_type in ('Admin','Employee')),
-password varchar(50) not null
+CREATE TABLE plans (
+    plan_id SERIAL PRIMARY KEY,
+    plan_name VARCHAR(50) UNIQUE NOT NULL,
+    price DECIMAL(10, 2) NOT NULL CHECK (price >= 0)
 );
 
-create table employees(
-employee_id int primary key not null unique references users(user_id) on delete cascade,
-name varchar(100) not null,
-email varchar(100) not null unique,
-phone_num varchar(20) not null unique,
-job_title varchar(100),
-section_name varchar(100),
-role varchar(20) check (role in ('Curator','Guide'))
+CREATE TABLE users (
+    user_id SERIAL PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    country VARCHAR(50),
+    last_login_at TIMESTAMP
 );
 
-alter table employees add column image bytea;
+CREATE TABLE subscriptions (
+    subscription_id BIGSERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    plan_id INT NOT NULL REFERENCES plans(plan_id) ON DELETE RESTRICT,
+    start_date DATE NOT NULL,
+    end_date DATE,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('active', 'canceled', 'trialing', 'expired'))
+);
 
-alter table employees drop column role;
+CREATE TABLE events (
+    event_id BIGSERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    session_id VARCHAR(255),
+    event_timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    event_name VARCHAR(100) NOT NULL,
+    properties JSONB
+);
 
-create table administrators(
-admin_id int primary key not null unique references users(user_id) on delete cascade,
-name varchar(100) not null,
-email varchar(100) not null unique,
-section_name varchar(100)
+CREATE TABLE orders (
+    order_id BIGSERIAL PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE SET NULL,
+    order_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    amount DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE employees (
+    employee_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    salary DECIMAL(10, 2),
+    hire_date DATE,
+    manager_id INT REFERENCES employees(employee_id)
 );
