@@ -9,12 +9,13 @@ CREATE TABLE users (
     email VARCHAR(255) UNIQUE NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     country VARCHAR(50),
-    last_login_at TIMESTAMP
+    last_login_at TIMESTAMP,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE
 );
 
 CREATE TABLE subscriptions (
     subscription_id BIGSERIAL PRIMARY KEY,
-    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    user_id INT NOT NULL REFERENCES users(user_id) ON DELETE RESTRICT,
     plan_id INT NOT NULL REFERENCES plans(plan_id) ON DELETE RESTRICT,
     start_date DATE NOT NULL,
     end_date DATE,
