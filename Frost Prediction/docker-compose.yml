@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: frost
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: frost
+      POSTGRES_DB: weather_data
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    networks:
+      - weather_network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  weather_network:
+    driver: bridge
