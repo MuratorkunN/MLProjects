@@ -1,8 +1,9 @@
-create table min_temp (
-    id serial PRIMARY KEY,
-    data JSONB
+CREATE TABLE frost_data (
+    date DATE NOT NULL,
+    min_temperature FLOAT,
+    frost INTEGER
 );
 
-COPY weather_data(data)
-FROM 'frost.json'
-WITH (FORMAT json);
+\COPY frost_data (date, min_temperature, frost)
+FROM 'temp_and_frost_data.csv'
+WITH (FORMAT csv, HEADER true);
