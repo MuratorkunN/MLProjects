@@ -2,3 +2,5 @@ Frost Prediction/min_temperature.json
 Frost Prediction/temp_and_frost_data.csv
 Frost Prediction/temperature.csv
 Frost Prediction/frost.json
+
+Frost Prediction/model_0/temperature.csv
