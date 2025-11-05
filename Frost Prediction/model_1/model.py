@@ -32,7 +32,6 @@ df_temperature["temp_7day_mean"] = df_temperature["min_temp"].rolling(window=7, 
 df_temperature["temp_3day_trend"] = df_temperature["min_temp"].diff(periods=3)
 df_temperature["frost_days_10"] = df_temperature["min_temp"].rolling(window=10, min_periods=1).apply(lambda x: (x < 0).sum())
 df_temperature["stage_day"] = (df_temperature.groupby("phenological_stage_code", group_keys=False).cumcount() + 1)
-df_temperature["temp_stage_interaction"] = df_temperature["min_temp"] * df_temperature["phenological_stage_code"]
 
 phenology_thresholds = {
     row['stage_code']: {
@@ -61,6 +60,15 @@ def assign_frost_label(row):
 df_temperature['frost_damage'] = df_temperature.apply(assign_frost_label, axis=1)
 df_temperature['frost_damage'] = df_temperature['frost_damage'].apply(lambda x: 1 if x > 0 else 0)
 
+def temp_minus_critical(row):
+    code = row["phenological_stage_code"]
+    temp = row["min_temp"]
+    if code == 0 or pd.isnull(temp):
+        return np.nan
+    return temp - phenology_thresholds[code]['mild']
+
+df_temperature["temp_minus_critical"] = df_temperature.apply(temp_minus_critical, axis=1)
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -74,7 +82,7 @@ feature_cols = [
     'temp_3day_trend',
     'frost_days_10',
     'stage_day',
-    'temp_stage_interaction'
+    'temp_minus_critical'
 ]
 X = df_temperature[feature_cols]
 y = df_temperature['frost_damage']
@@ -125,3 +133,56 @@ feat_imp_xgb = pd.DataFrame({
 }).sort_values('importance', ascending=False)
 print("\nXGBoost Feature Importances:\n")
 print(feat_imp_xgb)
+
+
+
+
+test_df = pd.read_csv("temp_and_frost_data.csv", parse_dates=["date"])
+test_df["date"] = pd.to_datetime(test_df["date"])
+
+test_df['frost'] = test_df['frost'].apply(lambda x: 1 if x > 0 else 0)
+
+test_df["day_of_year"] = test_df["date"].dt.day_of_year
+test_df["phenological_stage_code"] = test_df["day_of_year"].apply(
+    lambda doy: get_phenological_stage_code(doy, df_phenology)
+)
+test_df["temp_7day_mean"] = test_df["min_temp"].rolling(window=7, min_periods=1).mean()
+test_df["temp_3day_trend"] = test_df["min_temp"].diff(periods=3)
+test_df["frost_days_10"] = test_df["min_temp"].rolling(window=10, min_periods=1).apply(lambda x: (x < 0).sum())
+test_df["stage_day"] = (test_df.groupby("phenological_stage_code", group_keys=False).cumcount() + 1)
+
+def temp_minus_critical_test(row):
+    code = row["phenological_stage_code"]
+    temp = row["min_temp"]
+    if code == 0 or pd.isnull(temp):
+        return np.nan
+    return temp - phenology_thresholds[code]['mild']
+
+test_df["temp_minus_critical"] = test_df.apply(temp_minus_critical_test, axis=1)
+
+external_feature_cols = [
+    'min_temp',
+    'phenological_stage_code',
+    'day_of_year',
+    'temp_7day_mean',
+    'temp_3day_trend',
+    'frost_days_10',
+    'stage_day',
+    'temp_minus_critical'
+]
+
+X_external = test_df[external_feature_cols]
+y_external = test_df['frost']
+
+rf_pred = rf_model.predict(X_external)
+xgb_pred = xgb_model.predict(X_external)
+
+from sklearn.metrics import classification_report, confusion_matrix
+print("\nRandom Forest: GERÇEK LABEL İLE DIŞ TEST SONUCU")
+print(classification_report(y_external, rf_pred))
+print("XGBoost: GERÇEK LABEL İLE DIŞ TEST SONUCU")
+print(classification_report(y_external, xgb_pred))
+print("\nRandom Forest confusion matrix:")
+print(confusion_matrix(y_external, rf_pred))
+print("\nXGBoost confusion matrix:")
+print(confusion_matrix(y_external, xgb_pred))

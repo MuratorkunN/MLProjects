@@ -63,6 +63,8 @@ def assign_frost_label(row):
 
 df_temperature['frost_damage'] = df_temperature.apply(assign_frost_label, axis=1)
 
+df_temperature['frost_damage'] = df_temperature['frost_damage'].apply(lambda x: 1 if x > 0 else 0)
+
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -114,7 +116,6 @@ print(classification_report(y_test, rf_pred))
 print("XGBoost Report:")
 print(classification_report(y_test, xgb_pred))
 
-import pandas as pd
 feat_imp_rf = pd.DataFrame({
     'feature': feature_cols,
     'importance': rf_model.feature_importances_
