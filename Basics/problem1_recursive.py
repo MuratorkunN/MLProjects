@@ -3,11 +3,8 @@ def solution(digits = int, change = int):
         answer = 10
     elif change == 1:
         answer = 10 ** digits
-
     else:
-        answer = solution(digits - 1, change) + solution(digits - 1, change - 1)
-
-
+        answer = 10 * solution(digits - 1, change) + 90 * solution(digits - 1, change - 1)
 
     return answer
 
