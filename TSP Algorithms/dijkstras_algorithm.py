@@ -41,7 +41,7 @@ def dijkstra(nodes, distance_matrix, start):
     return distances
 
 
-
+"""
 nodes = ["n1", "n2", "n3", "n4", "n5"]
 
 inf = float('inf')
@@ -65,3 +65,4 @@ for i, d in enumerate(distances):
 expected = [0, 3, 7, 1, 2]
 if distances == expected:
     print("\ncorrect")
+"""
