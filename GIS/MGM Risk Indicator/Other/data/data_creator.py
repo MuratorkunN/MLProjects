@@ -18,19 +18,18 @@ def get_english_filename(text):
     # Büyükorhan -> buyukorhan
 
     mapping = {
-        'ç': 'c', 'Ç': 'c',
-        'ğ': 'g', 'Ğ': 'g',
-        'ı': 'i', 'I': 'i',
-        'İ': 'i', 'i': 'i',
-        'ö': 'o', 'Ö': 'o',
-        'ş': 's', 'Ş': 's',
-        'ü': 'u', 'Ü': 'u'
+        'İ': 'i', 'I': 'i', 'ı': 'i',
+        'Ş': 's', 'ş': 's',
+        'Ğ': 'g', 'ğ': 'g',
+        'Ü': 'u', 'ü': 'u',
+        'Ö': 'o', 'ö': 'o',
+        'Ç': 'c', 'ç': 'c'
     }
 
-    text = text.lower()
     for tr, en in mapping.items():
         text = text.replace(tr, en)
-    return text
+
+    return text.lower()
 
 
 def main():
