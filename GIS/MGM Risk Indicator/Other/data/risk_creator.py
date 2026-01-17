@@ -6,6 +6,7 @@ import os
 input_folder = "."
 
 output_csv = os.path.join(input_folder, "risk_outputs.csv")
+output_csvt = os.path.join(input_folder, "risk_outputs.csvt")
 
 limit_temperature = 0
 
@@ -106,5 +107,11 @@ output_df = output_df[['AD', 'min1', 'min2', 'min3', 'min4']]
 
 output_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
 
-print(f"\nSaved file {output_csv}")
+csvt_content = '"String","Real","Real","Real","Real"'
+
+with open(output_csvt, "w") as f:
+    f.write(csvt_content)
+
+print(f"\nSaved csv file {output_csv}")
+print(f"Saved csvt file {output_csvt}")
 print(f"\n{output_df.head()}")
