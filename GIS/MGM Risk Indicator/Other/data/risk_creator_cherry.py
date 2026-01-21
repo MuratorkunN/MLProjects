@@ -4,11 +4,12 @@ from scipy.stats import t
 import os
 
 input_folder = "."
+output_folder = os.path.join(input_folder, "risk_outputs")
 
-output_csv = os.path.join(input_folder, "risk_outputs.csv")
-output_csvt = os.path.join(input_folder, "risk_outputs.csvt")
+output_csv = os.path.join(output_folder, "risk_outputs_cherry.csv")
+output_csvt = os.path.join(output_folder, "risk_outputs_cherry.csvt")
 
-limit_temperature = 0
+limit_temperature = -2
 
 ilceler = [
     "BÜYÜKORHAN", "GEMLİK", "GÜRSU", "HARMANCIK", "KARACABEY", "KELES",
