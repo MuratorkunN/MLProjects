@@ -41,9 +41,10 @@ def calculate_prob(prediction, limit, diff_data):
     prob = t.cdf(diff_needed, df_day, loc, scale)
     return prob
 
-def get_limit_temperature(fruit, target_date):
-    m = target_date.month
-    d = target_date.day
+
+def get_limit_temperature(fruit, date):
+    m = date.month
+    d = date.day
     md = (m, d)
 
     if fruit == "peach":
@@ -52,19 +53,19 @@ def get_limit_temperature(fruit, target_date):
         if (2, 16) <= md <= (3, 20): return -4
         return -10
 
-    elif fruit == "plum":
+    if fruit == "plum":
         if (1, 5) <= md <= (1, 20): return 0
         if (1, 21) <= md <= (2, 15): return -2
         if (2, 15) <= md <= (3, 20): return -5
         return -15
 
-    elif fruit == "cherry":
+    if fruit == "cherry":
         if (1, 1) <= md <= (1, 15): return 1
         if (1, 16) <= md <= (3, 15): return -3
         if (3, 16) <= md <= (3, 25): return -4
         return -14
 
-    elif fruit == "sourcherry":
+    if fruit == "sourcherry":
         if (1, 10) <= md <= (1, 30): return -2
         if (1, 31) <= md <= (2, 20): return -4
         if (2, 21) <= md <= (3, 30): return -6
@@ -76,8 +77,6 @@ def get_limit_temperature(fruit, target_date):
 fruits = ["cherry", "peach", "plum", "sourcherry"]
 
 for fruit in fruits:
-    print(fruit.upper())
-
     output_csv = os.path.join(output_folder, f"risk_outputs_{fruit}.csv")
     output_csvt = os.path.join(output_folder, f"risk_outputs_{fruit}.csvt")
 
@@ -107,19 +106,6 @@ for fruit in fruits:
         try:
             df = pd.read_csv(file_path)
 
-            valid_preds = df[df['min1'].notna()]
-
-            current_date_ref = datetime.now()
-            if not valid_preds.empty:
-                last_row = valid_preds.iloc[-1]
-                # Sütun isimlerinde 'Date', 'date', 'Tarih' veya 'tarih' ara
-                date_col = next((col for col in df.columns if col.lower() in ['date', 'tarih']), None)
-                if date_col:
-                    try:
-                        current_date_ref = pd.to_datetime(last_row[date_col], dayfirst=True)
-                    except:
-                        pass
-
             for day in range(1, 5):
                 target_min = f"min{day}"
                 target_max = f"max{day}"
@@ -131,13 +117,15 @@ for fruit in fruits:
 
                 combined_diffs = pd.concat([diff_min, diff_max]).dropna()
 
+                valid_preds = df[df[target_min].notna()]
+
                 if valid_preds.empty:
                     row_data[f'min{day}'] = None
                 else:
                     current_pred = valid_preds.iloc[-1][target_min]
 
-                    target_date_for_limit = current_date_ref + timedelta(days=day)
-                    limit_temperature = get_limit_temperature(fruit, target_date_for_limit)
+                    target_date = datetime.now() + timedelta(days=day)
+                    limit_temperature = get_limit_temperature(fruit, target_date)
 
                     prob = calculate_prob(current_pred, limit_temperature, combined_diffs)
 
@@ -147,16 +135,14 @@ for fruit in fruits:
                         row_data[f'min{day}'] = None
 
             results.append(row_data)
-            print(
-                f"{ilce} DONE, limit used for min1: {get_limit_temperature(fruit, current_date_ref + timedelta(days=1))})")
+            print(f"{ilce} DONE")
 
         except Exception as e:
             print(f"ERROR {ilce} {e}")
             results.append(row_data)
 
     output_df = pd.DataFrame(results)
-    cols = ['AD', 'min1', 'min2', 'min3', 'min4']
-    output_df = output_df[cols]
+    output_df = output_df[['AD', 'min1', 'min2', 'min3', 'min4']]
 
     output_df.to_csv(output_csv, index=False, encoding='utf-8-sig')
 
@@ -167,6 +153,4 @@ for fruit in fruits:
 
     print(f"\nSaved csv file {output_csv}")
     print(f"Saved csvt file {output_csvt}")
-    print(f"Preview for {fruit}:\n{output_df.head()}")
-
-print("\nALL PROCESSES COMPLETED.")
+    print(f"\n{output_df.head()}")
