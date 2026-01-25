@@ -70,4 +70,4 @@ def get_historical_data(date, df, col1, col2):
 
 df_hist = pd.read_csv("era5/era5-temperature.csv")
 df_hist['date'] = pd.to_datetime(df_hist['date'])
-get_historical_data("25.01", df_hist, 'date', 'min_temp')
+get_historical_data("26.01", df_hist, 'date', 'min_temp')
