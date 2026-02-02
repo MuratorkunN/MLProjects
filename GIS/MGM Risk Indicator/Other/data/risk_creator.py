@@ -48,28 +48,28 @@ def get_limit_temperature(fruit, date):
     md = (m, d)
 
     if fruit == "peach":
-        if (1, 1) <= md <= (1, 15): return -1
-        if (1, 16) <= md <= (2, 15): return -2
-        if (2, 16) <= md <= (3, 20): return -4
-        return -10
+        if (2, 20) <= md <= (3, 10): return -5
+        if (3, 11) <= md <= (3, 31): return -3
+        if (4, 1) <= md <= (10, 31): return -1
+        return -18
 
     if fruit == "plum":
-        if (1, 5) <= md <= (1, 20): return 0
-        if (1, 21) <= md <= (2, 15): return -2
-        if (2, 15) <= md <= (3, 20): return -5
-        return -15
+        if (2, 15) <= md <= (3, 5): return -4
+        if (3, 6) <= md <= (3, 25): return -2
+        if (3, 26) <= md <= (10, 31): return -1
+        return -18
 
     if fruit == "cherry":
-        if (1, 1) <= md <= (1, 15): return 1
-        if (1, 16) <= md <= (3, 15): return -3
-        if (3, 16) <= md <= (3, 25): return -4
-        return -14
+        if (3, 15) <= md <= (3, 31): return -3.5
+        if (4, 1) <= md <= (4, 20): return -2
+        if (4, 21) <= md <= (10, 31): return -1
+        return -20
 
     if fruit == "sourcherry":
-        if (1, 10) <= md <= (1, 30): return -2
-        if (1, 31) <= md <= (2, 20): return -4
-        if (2, 21) <= md <= (3, 30): return -6
-        return -20
+        if (3, 25) <= md <= (4, 15): return -3
+        if (4, 16) <= md <= (4, 30): return -2
+        if (5, 1) <= md <= (10, 31): return -2
+        return -25
 
     return 0
 
