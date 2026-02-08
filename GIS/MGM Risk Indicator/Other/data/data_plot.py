@@ -93,6 +93,9 @@ for ilce in ilceler:
             ax.set_xlabel('Difference')
 
             df_t, loc_t, scale_t = t.fit(data_points, floc=0)
+            if df_t < 1.5:
+                df_t, loc_t, scale_t = t.fit(data_points, floc=0, fdf=4)
+
             pdf_t = t.pdf(x_vals, df_t, loc_t, scale_t)
             ax.plot(x_vals, pdf_t, 'cyan', lw=2, label=f'T (df={df_t:.1f})')
 
@@ -112,6 +115,9 @@ for ilce in ilceler:
             data_points = combined_diffs[d]
             if len(data_points) > 2:
                 df_t, loc_t, scale_t = t.fit(data_points, floc=0)
+                if df_t < 1.5:
+                    df_t, loc_t, scale_t = t.fit(data_points, floc=0, fdf=4)
+
                 stdev_t = t.std(df_t, loc=loc_t, scale=scale_t)
                 print(f"{d:<5}{'T':<15}{stdev_t:.4f}{scale_t:.4f}")
         print("\n")
