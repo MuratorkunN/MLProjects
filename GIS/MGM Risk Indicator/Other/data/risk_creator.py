@@ -59,22 +59,10 @@ def get_limit_temperature(fruit, date):
         if (3, 26) <= md <= (10, 31): return -1
         return -18
 
-    if fruit == "cherry":
-        if (3, 15) <= md <= (3, 31): return -3.5
-        if (4, 1) <= md <= (4, 20): return -2
-        if (4, 21) <= md <= (10, 31): return -1
-        return -20
-
-    if fruit == "sourcherry":
-        if (3, 25) <= md <= (4, 15): return -3
-        if (4, 16) <= md <= (4, 30): return -2
-        if (5, 1) <= md <= (10, 31): return -2
-        return -25
-
     return 0
 
 
-fruits = ["cherry", "peach", "plum", "sourcherry"]
+fruits = ["cherry", "plum"]
 
 for fruit in fruits:
     output_csv = os.path.join(output_folder, f"risk_outputs_{fruit}.csv")
