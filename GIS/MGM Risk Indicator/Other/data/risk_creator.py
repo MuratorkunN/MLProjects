@@ -48,16 +48,18 @@ def get_limit_temperature(fruit, date):
     md = (m, d)
 
     if fruit == "peach":
-        if (2, 20) <= md <= (3, 10): return -5
-        if (3, 11) <= md <= (3, 31): return -3
-        if (4, 1) <= md <= (10, 31): return -1
-        return -18
+        if (2, 20) <= md <= (3, 10): return -5 # stage 1
+        if (3, 11) <= md <= (3, 31): return -3 # stage 2
+        if (4, 1) <= md <= (4, 10): return -1 # stage 3
+        if (4, 11) <= md <= (4, 15): return 0 # stage 4
+        return -18 # the rest, not a critical interval
 
     if fruit == "plum":
-        if (2, 15) <= md <= (3, 5): return -4
-        if (3, 6) <= md <= (3, 25): return -2
-        if (3, 26) <= md <= (10, 31): return -1
-        return -18
+        if (2, 15) <= md <= (3, 5): return -4 # stage 1
+        if (3, 6) <= md <= (3, 25): return -2 # stage 2
+        if (3, 26) <= md <= (4, 5): return -1 # stage 3
+        if (4, 6) <= md <= (4, 10): return 0 # stage 4
+        return -18 # the rest, not a critical interval
 
     return 0
 
