@@ -5,7 +5,7 @@ from datetime import datetime, timedelta
 
 SOURCE_FOLDER = "mgm-scrapper-main"
 START_DATE_STR = "2026-01-06"
-END_DATE_STR = "2026-01-30"
+END_DATE_STR = "2026-02-13"
 
 COLUMNS = [
     'date',
