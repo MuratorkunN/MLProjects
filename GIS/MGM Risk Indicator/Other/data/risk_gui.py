@@ -5,6 +5,10 @@ import os
 import glob
 from datetime import datetime
 
+"""
+NOTE: AI GENERATED GUI
+"""
+
 class FrostRiskApp:
     def __init__(self, root):
         self.root = root
@@ -161,7 +165,7 @@ class FrostRiskApp:
                 if (3, 1) <= md <= (3, 10): return -2.8
                 if (3, 11) <= md <= (3, 20): return -2.8
                 if (3, 21) <= md <= (4, 15): return -1.1
-                return 12#-18.0
+                return 12# -18.0
             return -2
 
         if severity == "90percent":
@@ -173,13 +177,13 @@ class FrostRiskApp:
                 if (3, 31) <= md <= (4, 4): return -6.1
                 if (4, 5) <= md <= (4, 12): return -4.4
                 if (4, 13) <= md <= (4, 25): return -3.8
-                return 8#-20.0
+                return 8 #-20.0
 
             if fruit == "plum":
                 if (3, 1) <= md <= (3, 10): return -5.0
                 if (3, 11) <= md <= (3, 20): return -5.0
                 if (3, 21) <= md <= (4, 15): return -4.5
-                return 7#-25.0
+                return 7 #-25.0
 
             return -4
 
@@ -204,39 +208,45 @@ class FrostRiskApp:
                 forecasts = []
                 with open(filepath, mode='r', encoding='utf-8-sig') as f:
                     reader = csv.DictReader(f)
-                    for row in reader:
-                        # Logic: take the last not null day for min 1-2-3-4
-                        # Columns are min0, min1, min2, min3, min4
-                        # We prioritize min0 (newest prediction), then min1, etc.
+                    all_rows = list(reader) # Load all into memory to traverse backwards
+                    
+                    # Logic: 
+                    # We want exactly 5 days: Day 0 (min0), Day 1 (min1), ... Day 4 (min4)
+                    # For each 'i', find the LAST row where 'mini' is not null.
+                    
+                    for i in range(5):
+                        key_min = f"min{i}"
+                        key_max = f"max{i}"
+                        found = False
                         
-                        min_temp = None
-                        max_temp = None
+                        # Traverse backwards to find the last occurrence
+                        for row in reversed(all_rows):
+                            val_min = row.get(key_min)
+                            if val_min and val_min.strip():
+                                try:
+                                    min_temp = float(val_min)
+                                    # Get max temp if available, otherwise "-"
+                                    val_max = row.get(key_max)
+                                    max_temp = float(val_max) if (val_max and val_max.strip()) else "-"
+                                    
+                                    date_obj = datetime.strptime(row['date'], "%d.%m.%Y")
+                                    
+                                    forecasts.append({
+                                        'date_obj': date_obj,
+                                        'date_str': row['date'],
+                                        'min': min_temp,
+                                        'max': max_temp
+                                    })
+                                    found = True
+                                    break # Found the last entry for this day index, stop searching
+                                except ValueError:
+                                    continue
                         
-                        # Find first non-empty min value
-                        for i in range(5):
-                            val = row.get(f'min{i}')
-                            if val and val.strip():
-                                min_temp = float(val)
-                                break
-                        
-                        # Find first non-empty max value (same logic)
-                        for i in range(5):
-                            val = row.get(f'max{i}')
-                            if val and val.strip():
-                                max_temp = float(val)
-                                break
-                        
-                        if min_temp is not None:
-                            try:
-                                date_obj = datetime.strptime(row['date'], "%d.%m.%Y")
-                                forecasts.append({
-                                    'date_obj': date_obj,
-                                    'date_str': row['date'],
-                                    'min': min_temp,
-                                    'max': max_temp if max_temp is not None else "-"
-                                })
-                            except ValueError:
-                                continue
+                        # If not found for a specific day index, we just skip it 
+                        # (or you could append a placeholder if strict 5-day view is needed)
+
+                # Sort by date because min0, min1... might result in dates out of order if there are gaps (though unlikely)
+                forecasts.sort(key=lambda x: x['date_obj'])
                 
                 if forecasts:
                     self.district_data[district_key] = forecasts
@@ -315,6 +325,11 @@ class FrostRiskApp:
         lowest_temp = 100
         worst_risk_level = 0 # 0 safe, 1 warning, 2 critical
         
+        if not forecasts:
+            self.status_label.config(text="No data available", foreground="#a0a0a0")
+            self.analysis_label.config(text="")
+            return
+
         for row in forecasts:
             temp = row['min']
             d_obj = row['date_obj']
